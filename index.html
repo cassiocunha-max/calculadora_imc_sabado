@@ -5,92 +5,199 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de IMC</title>
   <style>
+    /* Estilo geral */
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f4f4f4;
+      background: linear-gradient(135deg, #2c003e, #000428); /* Fundo roxo e azul escuro */
+      color: #ffffff; /* Texto branco */
+      animation: fadeIn 1s ease-in-out;
     }
 
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Painel principal */
     .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background: #1a0033; /* Fundo roxo escuro */
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
       text-align: center;
-      width: 300px;
+      width: 400px;
+      animation: slideIn 1s ease-in-out;
     }
 
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    /* Título */
     h1 {
-      font-size: 24px;
+      font-size: 28px;
       margin-bottom: 20px;
+      color: #a64dff; /* Roxo vibrante */
+      text-shadow: 0 0 10px #a64dff, 0 0 20px #a64dff;
     }
 
+    /* Labels */
     label {
       display: block;
       margin: 10px 0 5px;
       font-weight: bold;
+      color: #ffffff;
     }
 
+    /* Inputs */
     input {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: 1px solid #a64dff; /* Borda roxa */
+      border-radius: 6px;
+      background-color: #2c003e; /* Fundo roxo escuro */
+      color: #ffffff; /* Texto branco */
+      transition: border-color 0.3s ease;
     }
 
+    input:focus {
+      border-color: #7a00cc; /* Roxo mais escuro ao focar */
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #888888; /* Placeholder cinza */
+    }
+
+    /* Botões */
     button {
-      background-color: #007BFF;
+      background-color: #a64dff; /* Roxo vibrante */
       color: white;
       border: none;
       padding: 10px 15px;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin: 5px;
+      box-shadow: 0 4px 10px rgba(166, 77, 255, 0.4);
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: #7a00cc; /* Roxo mais escuro ao passar o mouse */
+      transform: scale(1.05); /* Leve aumento ao passar o mouse */
     }
 
+    button:active {
+      transform: scale(0.95); /* Leve redução ao clicar */
+    }
+
+    /* Resultado */
     .result {
       margin-top: 15px;
       font-size: 18px;
       font-weight: bold;
+      color: #a64dff; /* Roxo vibrante */
+      opacity: 0;
+      animation: fadeInResult 0.5s ease-in-out forwards;
+    }
+
+    @keyframes fadeInResult {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Histórico */
+    .history {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .history h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #a64dff; /* Roxo vibrante */
+      text-shadow: 0 0 10px #a64dff;
+    }
+
+    .history .history-item {
+      background: #2c003e; /* Fundo roxo escuro */
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      animation: fadeInHistory 0.5s ease-in-out;
+    }
+
+    .history .history-item p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #ffffff; /* Texto branco */
+    }
+
+    @keyframes fadeInHistory {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Calculadora de IMC</h1>
-    <label for="altura">Altura (em metros):</label>
-    <input type="number" id="altura" step="0.01" placeholder="Ex: 1.75">
+    <label for="altura">Altura (em centímetros):</label>
+    <input type="number" id="altura" step="1" placeholder="Ex: 175">
 
     <label for="peso">Peso (em kg):</label>
     <input type="number" id="peso" step="0.1" placeholder="Ex: 70">
 
     <button onclick="calcularIMC()">Calcular IMC</button>
+    <button onclick="limparHistorico()">Limpar Histórico</button>
 
     <div class="result" id="resultado"></div>
+
+    <div class="history">
+      <h2>Histórico de Resultados</h2>
+      <div id="historico"></div>
+    </div>
   </div>
 
   <script>
     function calcularIMC() {
-      const altura = parseFloat(document.getElementById('altura').value);
+      const alturaCm = parseFloat(document.getElementById('altura').value);
       const peso = parseFloat(document.getElementById('peso').value);
       const resultado = document.getElementById('resultado');
 
-      if (!altura || !peso || altura <= 0 || peso <= 0) {
+      if (!alturaCm || !peso || alturaCm <= 0 || peso <= 0) {
         resultado.textContent = 'Por favor, insira valores válidos.';
         return;
       }
 
-      const imc = (peso / (altura * altura)).toFixed(2);
+      const alturaM = alturaCm / 100; // Converter altura de cm para metros
+      const imc = (peso / (alturaM * alturaM)).toFixed(2);
 
       let classificacao = '';
       if (imc < 18.5) {
@@ -103,8 +210,46 @@
         classificacao = 'Obesidade';
       }
 
-      resultado.textContent = `Seu IMC é ${imc} (${classificacao}).`;
+      const horario = new Date().toLocaleString(); // Capturar data e hora do cálculo
+      const resultadoTexto = `Seu IMC é ${imc} (${classificacao}).`;
+      resultado.textContent = resultadoTexto;
+
+      // Salvar no Local Storage
+      const novoResultado = { alturaCm, peso, imc, classificacao, horario };
+      let resultadosAnteriores = JSON.parse(localStorage.getItem('historicoIMC')) || [];
+      resultadosAnteriores.push(novoResultado);
+      localStorage.setItem('historicoIMC', JSON.stringify(resultadosAnteriores));
+
+      // Atualizar histórico
+      atualizarHistorico();
     }
+
+    function atualizarHistorico() {
+      const historico = document.getElementById('historico');
+      const resultadosAnteriores = JSON.parse(localStorage.getItem('historicoIMC')) || [];
+      historico.innerHTML = '';
+
+      resultadosAnteriores.forEach((resultado, index) => {
+        const div = document.createElement('div');
+        div.classList.add('history-item');
+        div.innerHTML = `
+          <p><strong>#${index + 1}</strong></p>
+          <p>Altura: ${resultado.alturaCm} cm</p>
+          <p>Peso: ${resultado.peso} kg</p>
+          <p>IMC: ${resultado.imc} (${resultado.classificacao})</p>
+          <p>Horário: ${resultado.horario}</p>
+        `;
+        historico.appendChild(div);
+      });
+    }
+
+    function limparHistorico() {
+      localStorage.removeItem('historicoIMC');
+      atualizarHistorico();
+    }
+
+    // Carregar histórico ao carregar a página
+    window.onload = atualizarHistorico;
   </script>
 </body>
 </html>
